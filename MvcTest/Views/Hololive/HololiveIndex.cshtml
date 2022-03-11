@@ -1,0 +1,53 @@
+@using Newtonsoft.Json
+@using System.Collections
+@using System.Web
+@using Newtonsoft.Json.Linq
+@{
+    var live = ViewData["Live"];
+    var upcoming = ViewData["Upcoming"];
+    var ended = ViewData["Ended"];
+
+    DateTime dateValue;
+}
+
+
+<div class="row">
+    <div class="col-sm-4">
+        <div class="list-group">
+                @foreach (var l in (IEnumerable) live)
+                {
+                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start" id=@JObject.Parse(l.ToString() ?? string.Empty)["yt_video_key"] onclick="getId(this.id)">
+                        <div>
+                            <h5> @HttpUtility.HtmlDecode(@JObject.Parse(l.ToString() ?? string.Empty)["title"].ToString())</h5>
+                            <p class="p-small"><small>@DateTime.Parse(@JObject.Parse(l.ToString() ?? string.Empty)["live_schedule"]?.ToString() ?? string.Empty)</small></p>
+                        </div>
+                    </a>
+                }
+        </div>
+    </div>
+    <div class="col-sm-6 ">
+        <div class="row">
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe id="video" src="" allowfullscreen></iframe>
+            </div>
+        </div>
+            <div class="row">
+                <div class="embed-responsive embed-responsive-16by9">
+                    <iframe id="chat" src="" allowfullscreen></iframe>
+                </div>
+            </div>
+    </div>
+    <div class="col-sm-2">
+                <div class="list-group">
+                        @foreach (var u in (IEnumerable) upcoming)
+                        {
+                            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start" id=@JObject.Parse(u.ToString() ?? string.Empty)["yt_video_key"] onclick="getId(this.id)">
+                                <div>
+                                    <h5> @HttpUtility.HtmlDecode(@JObject.Parse(u.ToString() ?? string.Empty)["title"].ToString())</h5>
+                                    <p class="p-small"><small>@DateTime.Parse(@JObject.Parse(u.ToString() ?? string.Empty)["live_schedule"]?.ToString() ?? string.Empty)</small></p>
+                                </div>
+                            </a>
+                        }
+                </div>
+    </div>
+</div>
