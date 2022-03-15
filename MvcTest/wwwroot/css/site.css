@@ -15,6 +15,7 @@ html {
 
 body {
   margin-bottom: 60px;
+  background-color: black;
 }
 
 .p-small{
@@ -24,4 +25,24 @@ body {
 #video, #chat{
   width: 100%;
   height: 45vh;
+}
+
+iframe{
+  border-radius: 5px;
+}
+
+.list-group a:visited{
+  background-color: #181818;
+}
+
+.list-group a:hover{
+  background-color: #202020;
+}
+
+.list-group-item{
+  background-color: #181818;
+}
+
+h5, small{
+  color: white;
 }

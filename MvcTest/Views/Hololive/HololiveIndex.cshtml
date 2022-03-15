@@ -6,22 +6,47 @@
     var live = ViewData["Live"];
     var upcoming = ViewData["Upcoming"];
     var ended = ViewData["Ended"];
+    var ignore = new[] {"free", "chat", "schedule", "weekly", "pretend"};
+}
 
-    DateTime dateValue;
+@functions
+{
+    public string translate(string input)
+    {
+        HttpClient client = new HttpClient();
+        var from = "auto";
+        var to = "en";
+        var text = HttpUtility.UrlEncode(input);
+        var url = String.Format("https://translate.googleapis.com/translate_a/single?client=gtx&sl={0}&tl={1}&dt=t&q={2}", from, to, text);
+        var request = client.GetStringAsync(url).Result;
+        var jsonData = JsonConvert.DeserializeObject(request);
+        var lang = ((JArray) jsonData).Last.Last.Last;
+        if (lang.ToString() == "en")
+        {
+            return input;
+        }
+        var cr = ((JArray) jsonData).First.First.First.ToString().Replace("]", "】");
+        var cl = cr.Replace("[", "【");
+        return cl;
+    }
 }
 
 
 <div class="row">
     <div class="col-sm-4">
-        <div class="list-group">
+        <div id="liveDiv" class="list-group">
                 @foreach (var l in (IEnumerable) live)
                 {
                     <a href="#" class="list-group-item list-group-item-action flex-column align-items-start" id=@JObject.Parse(l.ToString() ?? string.Empty)["yt_video_key"] onclick="getId(this.id)">
-                        <div>
-                            <h5> @HttpUtility.HtmlDecode(@JObject.Parse(l.ToString() ?? string.Empty)["title"].ToString())</h5>
-                            <p class="p-small"><small>@DateTime.Parse(@JObject.Parse(l.ToString() ?? string.Empty)["live_schedule"]?.ToString() ?? string.Empty)</small></p>
-                        </div>
-                    </a>
+                            <div>
+                                <h5>
+                                    @HttpUtility.HtmlDecode(@JObject.Parse(l.ToString() ?? string.Empty)["title"].ToString())
+                                
+                                </h5>
+                                <p class="p-small"><small>@DateTime.Parse(@JObject.Parse(l.ToString() ?? string.Empty)["live_schedule"]?.ToString() ?? string.Empty)</small></p>
+                            </div>
+                        </a>
+                    
                 }
         </div>
     </div>
@@ -31,23 +56,27 @@
                 <iframe id="video" src="" allowfullscreen></iframe>
             </div>
         </div>
-            <div class="row">
-                <div class="embed-responsive embed-responsive-16by9">
-                    <iframe id="chat" src="" allowfullscreen></iframe>
-                </div>
+        <div class="row">
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe id="chat" src="" allowfullscreen></iframe>
             </div>
+        </div>
     </div>
     <div class="col-sm-2">
-                <div class="list-group">
-                        @foreach (var u in (IEnumerable) upcoming)
-                        {
-                            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start" id=@JObject.Parse(u.ToString() ?? string.Empty)["yt_video_key"] onclick="getId(this.id)">
-                                <div>
-                                    <h5> @HttpUtility.HtmlDecode(@JObject.Parse(u.ToString() ?? string.Empty)["title"].ToString())</h5>
-                                    <p class="p-small"><small>@DateTime.Parse(@JObject.Parse(u.ToString() ?? string.Empty)["live_schedule"]?.ToString() ?? string.Empty)</small></p>
-                                </div>
-                            </a>
-                        }
+                <div id="upcomingDiv" class="list-group">
+                @foreach (var u in (IEnumerable) upcoming)
+                {
+                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start" id=@JObject.Parse(u.ToString() ?? string.Empty)["yt_video_key"] onclick="getId(this.id)">
+                            <div>
+                                <h5>
+                                    @HttpUtility.HtmlDecode(@JObject.Parse(u.ToString() ?? string.Empty)["title"].ToString())
+                                
+                                </h5>
+                                <p class="p-small"><small>@DateTime.Parse(@JObject.Parse(u.ToString() ?? string.Empty)["live_schedule"]?.ToString() ?? string.Empty)</small></p>
+                            </div>
+                        </a>
+                    
+                }
                 </div>
     </div>
 </div>
